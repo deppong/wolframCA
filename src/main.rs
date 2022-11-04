@@ -103,8 +103,8 @@ fn main() {
         }
 
         // update board state
-        if step < HEIGHT-1 { step += 1; 
-
+        if step < HEIGHT-1 { 
+            step += 1; 
             run_rule(rule, &mut curr, &mut prev);
         }
 
