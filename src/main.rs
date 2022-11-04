@@ -4,7 +4,6 @@ use sdl2::pixels::PixelFormatEnum;
 use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::sys::SDL_Keycode;
 
 const WIDTH: u32 = 800;
 const HEIGHT: u32 = 800;
@@ -34,7 +33,11 @@ fn main() {
     let mut event_pump = sdl_context.event_pump().unwrap();
     let mut running = true;
 
-    let mut multiplier: u32 = 128;
+    let multiplier: u32 = 255;
+
+    // "board" states for the ca
+    let mut curr: Vec<u8> = vec![1; (WIDTH*3) as usize];
+    let mut prev: Vec<u8> = vec![0; (WIDTH*3) as usize];
 
     while running {
         for event in event_pump.poll_iter() {
@@ -44,20 +47,15 @@ fn main() {
                     running = false;
                     break;
                 },
-                Event::KeyDown { keycode: Some(Keycode::Up),   ..} => { multiplier+=1; break; },
-                Event::KeyDown { keycode: Some(Keycode::Down), ..} => { multiplier-=1; break; },
                 _ => {}
             }
         }
 
-        // edit framedata as you see fit
-        for y in 0..HEIGHT {
-            for x in 0..WIDTH {
-                let r = multiplier * x / WIDTH;
-                let g = multiplier * y / HEIGHT;
-                let b = 0;
-                let color = Color::RGB(r as u8, g as u8, b as u8);
-                put_pixel(x, y, color, &mut framedata);
+        for x in 0..WIDTH {
+            match curr[(x + WIDTH) as usize] {
+                0 => {put_pixel(x, 0, Color::BLACK, &mut framedata)},
+                1 => {put_pixel(x, 0, Color::RED, &mut framedata)},
+                _ => {}
             }
         }
 
