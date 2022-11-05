@@ -27,9 +27,7 @@ fn run_rule(rule: u8, curr: &mut Vec<u8>, prev: &mut Vec<u8>) {
             value = get_bit(rule, state);
 
         }
-        if i < curr.len() {
-            curr[i] = value;
-        }
+        curr[i] = value;
     }
 }
 
@@ -46,10 +44,7 @@ fn main() {
     let mut framebuffer = texture_creator.create_texture_streaming(Some(PixelFormatEnum::ARGB8888), WIDTH, HEIGHT).unwrap();
     let mut framedata: Vec<u8> = vec![0; ((WIDTH*HEIGHT)*4) as usize];
 
-    canvas.clear();
-
     let mut event_pump = sdl_context.event_pump().unwrap();
-    let mut running = true;
 
     // "board" states for the ca
     let mut curr: Vec<u8> = vec![0; (WIDTH*3) as usize];
@@ -60,13 +55,12 @@ fn main() {
 
     let mut step = 0;
     let mut rule = 0;
-    while running {
+    'running: loop {
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit {..} |
                 Event::KeyDown { keycode: Some(Keycode::Escape), ..} => {
-                    running = false;
-                    break;
+                    break 'running;
                 },
                 Event::KeyDown { keycode: Some(Keycode::Up), ..} => { 
                     step = 0;
@@ -79,7 +73,7 @@ fn main() {
                 },
                 Event::KeyDown { keycode: Some(Keycode::Down), ..} => { 
                     step = 0;
-                    if rule > 0 {rule -= 1;}
+                    if rule > 0 {rule -= 1;} else { rule = 255;}
                     curr = vec![0; (WIDTH*3) as usize];
                     prev = vec![0; (WIDTH*3) as usize];
                     curr[(WIDTH + WIDTH/2) as usize] = 1;
@@ -113,6 +107,4 @@ fn main() {
         canvas.copy(&framebuffer, None, None).expect("oops");
         canvas.present();
     }
-
-
 }
